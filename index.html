@@ -23,7 +23,7 @@
         .pixel {
             background-color: #ffffff;
             /* The border provides the grid lines */
-            border: 1px solid #e5e7eb;
+            border: 1px solid #e5e7eb; 
         }
         .no-grid .pixel {
             border-color: transparent;
@@ -51,6 +51,10 @@
             cursor: pointer;
             transform: translate(-10px, -10px);
         }
+        /* Modal styles */
+        #creations-modal {
+            transition: opacity 0.3s ease;
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex flex-col items-center justify-center min-h-screen p-4 transition-colors duration-300">
@@ -65,7 +69,6 @@
             <aside class="w-full lg:w-64 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col gap-4">
                 <h2 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-700 pb-2">Tools</h2>
                 
-                <!-- Color Picker -->
                 <div class="flex flex-col items-center">
                     <label for="colorPicker" class="mb-2 font-medium">Color</label>
                     <div class="color-picker-wrapper shadow-inner">
@@ -73,23 +76,18 @@
                     </div>
                 </div>
 
-                <!-- Tool Buttons -->
                 <div class="grid grid-cols-2 gap-3">
                     <button id="pencil-tool" class="tool-btn active flex flex-col items-center justify-center p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-indigo-500 hover:text-white transition-all duration-200">
-                        <i class="fas fa-pencil-alt text-2xl"></i>
-                        <span class="text-xs mt-1">Pencil</span>
+                        <i class="fas fa-pencil-alt text-2xl"></i><span class="text-xs mt-1">Pencil</span>
                     </button>
                     <button id="eraser-tool" class="tool-btn flex flex-col items-center justify-center p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-indigo-500 hover:text-white transition-all duration-200">
-                        <i class="fas fa-eraser text-2xl"></i>
-                        <span class="text-xs mt-1">Eraser</span>
+                        <i class="fas fa-eraser text-2xl"></i><span class="text-xs mt-1">Eraser</span>
                     </button>
                     <button id="fill-tool" class="tool-btn flex flex-col items-center justify-center p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-indigo-500 hover:text-white transition-all duration-200">
-                        <i class="fas fa-fill-drip text-2xl"></i>
-                        <span class="text-xs mt-1">Fill</span>
+                        <i class="fas fa-fill-drip text-2xl"></i><span class="text-xs mt-1">Fill</span>
                     </button>
                     <button id="eyedropper-tool" class="tool-btn flex flex-col items-center justify-center p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-indigo-500 hover:text-white transition-all duration-200">
-                        <i class="fas fa-eye-dropper text-2xl"></i>
-                        <span class="text-xs mt-1">Picker</span>
+                        <i class="fas fa-eye-dropper text-2xl"></i><span class="text-xs mt-1">Picker</span>
                     </button>
                 </div>
             </aside>
@@ -105,13 +103,11 @@
             <aside class="w-full lg:w-64 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col gap-4">
                 <h2 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-700 pb-2">Settings</h2>
                 
-                <!-- Grid Size -->
                 <div>
                     <label for="gridSize" class="block mb-2 font-medium">Grid Size: <span id="gridSizeLabel">32x32</span></label>
                     <input type="range" id="gridSize" min="8" max="64" value="32" step="8" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
                 </div>
 
-                <!-- Grid Lines Toggle -->
                 <div class="flex items-center justify-between">
                     <label for="gridLinesToggle" class="font-medium">Grid Lines</label>
                     <label class="relative inline-flex items-center cursor-pointer">
@@ -119,19 +115,37 @@
                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
                     </label>
                 </div>
-
-                <!-- Clear Canvas -->
-                <button id="clear-btn" class="w-full p-3 rounded-lg bg-red-500 text-white font-bold hover:bg-red-600 transition-colors duration-200 flex items-center justify-center gap-2">
-                    <i class="fas fa-trash"></i>
-                    Clear Canvas
-                </button>
-
-                <!-- Download Button -->
-                <button id="download-btn" class="w-full p-3 rounded-lg bg-green-500 text-white font-bold hover:bg-green-600 transition-colors duration-200 flex items-center justify-center gap-2">
-                    <i class="fas fa-download"></i>
-                    Export PNG
-                </button>
+                
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-4 flex flex-col gap-3">
+                    <button id="save-btn" class="w-full p-3 rounded-lg bg-blue-500 text-white font-bold hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button id="creations-btn" class="w-full p-3 rounded-lg bg-purple-500 text-white font-bold hover:bg-purple-600 transition-colors duration-200 flex items-center justify-center gap-2">
+                        <i class="fas fa-palette"></i> Creations
+                    </button>
+                    <button id="clear-btn" class="w-full p-3 rounded-lg bg-red-500 text-white font-bold hover:bg-red-600 transition-colors duration-200 flex items-center justify-center gap-2">
+                        <i class="fas fa-trash"></i> Clear Canvas
+                    </button>
+                    <button id="download-btn" class="w-full p-3 rounded-lg bg-green-500 text-white font-bold hover:bg-green-600 transition-colors duration-200 flex items-center justify-center gap-2">
+                        <i class="fas fa-download"></i> Export PNG
+                    </button>
+                </div>
             </aside>
+        </div>
+    </div>
+
+    <!-- Creations Modal -->
+    <div id="creations-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-2xl p-6 transform transition-all scale-95 opacity-0" id="modal-content">
+            <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-3">
+                <h3 class="text-2xl font-semibold">My Creations</h3>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 dark:hover:text-white transition-colors">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div id="creations-list" class="mt-4 max-h-[60vh] overflow-y-auto pr-2">
+                <!-- Saved creations will be listed here -->
+            </div>
         </div>
     </div>
 
@@ -146,74 +160,61 @@
             const clearBtn = document.getElementById('clear-btn');
             const downloadBtn = document.getElementById('download-btn');
             const gridLinesToggle = document.getElementById('gridLinesToggle');
+            const saveBtn = document.getElementById('save-btn');
+            const creationsBtn = document.getElementById('creations-btn');
+            const creationsModal = document.getElementById('creations-modal');
+            const modalContent = document.getElementById('modal-content');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const creationsList = document.getElementById('creations-list');
 
             // --- State Variables ---
             let currentColor = colorPicker.value;
-            let currentTool = 'pencil'; // 'pencil', 'eraser', 'fill', 'eyedropper'
+            let currentTool = 'pencil';
             let isDrawing = false;
             let gridSize = parseInt(gridSizeSlider.value);
-            const defaultPixelColor = '#ffffff'; // White
+            const defaultPixelColor = '#ffffff';
+            const STORAGE_KEY = 'pixelArtCreations';
 
             // --- Functions ---
 
-            /**
-             * Creates the pixel grid based on the current gridSize.
-             * It clears the existing grid and generates a new one.
-             */
             function createGrid() {
-                canvas.innerHTML = ''; // Clear previous grid
+                canvas.innerHTML = '';
                 canvas.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
                 canvas.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
-
                 for (let i = 0; i < gridSize * gridSize; i++) {
                     const pixel = document.createElement('div');
                     pixel.classList.add('pixel');
-                    pixel.dataset.index = i; // For flood fill
+                    pixel.dataset.index = i;
                     canvas.appendChild(pixel);
                 }
             }
-            
-            /**
-             * Handles the primary drawing logic when interacting with a pixel.
-             * @param {MouseEvent} e - The mouse event.
-             */
+
             function handlePixelInteraction(e) {
                 if (!e.target.classList.contains('pixel')) return;
                 const pixel = e.target;
-
                 switch (currentTool) {
-                    case 'pencil':
-                        pixel.style.backgroundColor = currentColor;
-                        break;
-                    case 'eraser':
-                        pixel.style.backgroundColor = defaultPixelColor;
-                        break;
+                    case 'pencil': pixel.style.backgroundColor = currentColor; break;
+                    case 'eraser': pixel.style.backgroundColor = defaultPixelColor; break;
                     case 'eyedropper':
                         const pickedColor = pixel.style.backgroundColor;
                         if (pickedColor) {
-                            // Convert rgb to hex for the color picker
                             const hexColor = rgbToHex(pickedColor);
                             colorPicker.value = hexColor;
                             currentColor = hexColor;
                         }
-                        // Switch back to pencil tool after picking a color
                         setActiveTool('pencil');
                         break;
-                    case 'fill':
-                        floodFill(pixel);
-                        break;
+                    case 'fill': floodFill(pixel); break;
                 }
             }
-
-            /**
-             * Implements the flood fill (bucket) algorithm using a queue-based approach.
-             * @param {HTMLElement} startPixel - The pixel where the fill starts.
-             */
+            
             function floodFill(startPixel) {
-                const allPixels = canvas.childNodes;
-                const startColor = startPixel.style.backgroundColor;
-                
-                if (startColor === currentColor) return; // Avoid infinite loops
+                const allPixels = Array.from(canvas.childNodes);
+                const startColor = startPixel.style.backgroundColor || 'rgb(255, 255, 255)';
+                const targetColorRgb = hexToRgb(currentColor);
+                const targetColor = `rgb(${targetColorRgb.r}, ${targetColorRgb.g}, ${targetColorRgb.b})`;
+
+                if (startColor === targetColor) return;
 
                 const queue = [startPixel];
                 const visited = new Set([startPixel.dataset.index]);
@@ -224,7 +225,8 @@
 
                     const neighbors = getNeighbors(currentPixel, allPixels);
                     for (const neighbor of neighbors) {
-                        if (!visited.has(neighbor.dataset.index) && neighbor.style.backgroundColor === startColor) {
+                        const neighborColor = neighbor.style.backgroundColor || 'rgb(255, 255, 255)';
+                        if (!visited.has(neighbor.dataset.index) && neighborColor === startColor) {
                             visited.add(neighbor.dataset.index);
                             queue.push(neighbor);
                         }
@@ -232,106 +234,118 @@
                 }
             }
 
-            /**
-             * Gets the adjacent neighbors of a pixel.
-             * @param {HTMLElement} pixel - The pixel to find neighbors for.
-             * @param {NodeListOf<Element>} allPixels - The list of all pixels in the canvas.
-             * @returns {Array<HTMLElement>} An array of neighboring pixel elements.
-             */
             function getNeighbors(pixel, allPixels) {
                 const index = parseInt(pixel.dataset.index);
                 const neighbors = [];
                 const x = index % gridSize;
                 const y = Math.floor(index / gridSize);
-
-                // Top
                 if (y > 0) neighbors.push(allPixels[index - gridSize]);
-                // Bottom
                 if (y < gridSize - 1) neighbors.push(allPixels[index + gridSize]);
-                // Left
                 if (x > 0) neighbors.push(allPixels[index - 1]);
-                // Right
                 if (x < gridSize - 1) neighbors.push(allPixels[index + 1]);
-                
                 return neighbors;
             }
             
-            /**
-             * Sets the currently active tool and updates the UI.
-             * @param {string} toolName - The name of the tool to activate.
-             */
             function setActiveTool(toolName) {
                 currentTool = toolName;
                 toolBtns.forEach(btn => {
-                    if (btn.id === `${toolName}-tool`) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
+                    btn.classList.toggle('active', btn.id === `${toolName}-tool`);
                 });
             }
 
-            /**
-             * Converts an RGB color string to a HEX string.
-             * @param {string} rgb - The RGB color string (e.g., "rgb(255, 0, 0)").
-             * @returns {string} The HEX color string (e.g., "#ff0000").
-             */
             function rgbToHex(rgb) {
-                if (rgb.startsWith('#')) return rgb;
+                if (!rgb || rgb.startsWith('#')) return rgb || defaultPixelColor;
                 let [r, g, b] = rgb.match(/\d+/g).map(Number);
                 return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
             }
+            
+            function hexToRgb(hex) {
+                let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
 
+            // --- Save/Load Logic ---
+            function getCreations() {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            }
+
+            function saveCreations(creations) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(creations));
+            }
+
+            function getCanvasData() {
+                const pixels = Array.from(canvas.childNodes).map(p => rgbToHex(p.style.backgroundColor));
+                return { gridSize, pixels };
+            }
+
+            function loadCanvasData(creationData) {
+                gridSize = creationData.gridSize;
+                gridSizeSlider.value = gridSize;
+                gridSizeLabel.textContent = `${gridSize}x${gridSize}`;
+                createGrid();
+                const pixels = canvas.childNodes;
+                creationData.pixels.forEach((color, i) => {
+                    if (pixels[i]) {
+                        pixels[i].style.backgroundColor = color;
+                    }
+                });
+            }
+
+            function renderCreationsList() {
+                const creations = getCreations();
+                creationsList.innerHTML = '';
+                if (creations.length === 0) {
+                    creationsList.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400">No saved creations yet. Click 'Save' to get started!</p>`;
+                    return;
+                }
+                creations.forEach((creation, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center justify-between p-3 rounded-lg bg-gray-100 dark:bg-gray-700 mb-2';
+                    item.innerHTML = `
+                        <span class="font-medium">${creation.name} (${creation.data.gridSize}x${creation.data.gridSize})</span>
+                        <div class="flex gap-2">
+                            <button data-index="${index}" class="load-creation-btn text-blue-500 hover:text-blue-400" title="Load"><i class="fas fa-upload"></i></button>
+                            <button data-index="${index}" class="rename-creation-btn text-yellow-500 hover:text-yellow-400" title="Rename"><i class="fas fa-edit"></i></button>
+                            <button data-index="${index}" class="delete-creation-btn text-red-500 hover:text-red-400" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    `;
+                    creationsList.appendChild(item);
+                });
+            }
+            
+            function openCreationsModal() {
+                renderCreationsList();
+                creationsModal.classList.remove('hidden');
+                creationsModal.classList.add('flex');
+                setTimeout(() => {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+            }
+
+            function closeCreationsModal() {
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    creationsModal.classList.add('hidden');
+                    creationsModal.classList.remove('flex');
+                }, 300);
+            }
 
             // --- Event Listeners ---
-
-            // Tool selection
-            toolBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const toolName = btn.id.replace('-tool', '');
-                    setActiveTool(toolName);
-                });
-            });
-
-            // Color picker change
-            colorPicker.addEventListener('input', (e) => {
-                currentColor = e.target.value;
-            });
-
-            // Grid size slider change
-            gridSizeSlider.addEventListener('input', (e) => {
-                gridSizeLabel.textContent = `${e.target.value}x${e.target.value}`;
-            });
-            gridSizeSlider.addEventListener('change', (e) => {
-                gridSize = parseInt(e.target.value);
-                createGrid();
-            });
-
-            // Clear button
+            toolBtns.forEach(btn => btn.addEventListener('click', () => setActiveTool(btn.id.replace('-tool', ''))));
+            colorPicker.addEventListener('input', (e) => { currentColor = e.target.value; });
+            gridSizeSlider.addEventListener('input', (e) => { gridSizeLabel.textContent = `${e.target.value}x${e.target.value}`; });
+            gridSizeSlider.addEventListener('change', (e) => { gridSize = parseInt(e.target.value); createGrid(); });
             clearBtn.addEventListener('click', createGrid);
-            
-            // Grid lines toggle
-            gridLinesToggle.addEventListener('change', () => {
-                canvas.classList.toggle('no-grid', !gridLinesToggle.checked);
-            });
-
-            // Download button
+            gridLinesToggle.addEventListener('change', () => canvas.classList.toggle('no-grid', !gridLinesToggle.checked));
             downloadBtn.addEventListener('click', () => {
-                // Temporarily remove borders for a clean image
                 const hadGrid = !canvas.classList.contains('no-grid');
-                if (hadGrid) {
-                    canvas.classList.add('no-grid');
-                }
-
-                html2canvas(canvas, {
-                    backgroundColor: null, // Transparent background
-                    scale: 5 // Increase resolution for better quality
-                }).then(canvasImage => {
-                    // Restore grid lines if they were on
-                    if (hadGrid) {
-                       canvas.classList.remove('no-grid');
-                    }
-                    
+                if (hadGrid) canvas.classList.add('no-grid');
+                html2canvas(canvas, { backgroundColor: null, scale: 5 }).then(canvasImage => {
+                    if (hadGrid) canvas.classList.remove('no-grid');
                     const link = document.createElement('a');
                     link.download = 'pixel-art.png';
                     link.href = canvasImage.toDataURL('image/png');
@@ -339,27 +353,65 @@
                 });
             });
 
-            // Canvas drawing events (mousedown, mousemove, mouseup)
-            canvas.addEventListener('mousedown', (e) => {
-                isDrawing = true;
-                handlePixelInteraction(e);
-            });
-            canvas.addEventListener('mousemove', (e) => {
-                if (isDrawing) {
-                    handlePixelInteraction(e);
-                }
-            });
-            // Stop drawing when mouse leaves the canvas or is released
-            document.body.addEventListener('mouseup', () => {
-                isDrawing = false;
-            });
-            canvas.addEventListener('mouseleave', () => {
-                isDrawing = false;
-            });
-            // Prevent drag-and-drop behavior
+            canvas.addEventListener('mousedown', (e) => { isDrawing = true; handlePixelInteraction(e); });
+            canvas.addEventListener('mousemove', (e) => { if (isDrawing) handlePixelInteraction(e); });
+            document.body.addEventListener('mouseup', () => { isDrawing = false; });
+            canvas.addEventListener('mouseleave', () => { isDrawing = false; });
             canvas.addEventListener('dragstart', (e) => e.preventDefault());
             canvas.addEventListener('drop', (e) => e.preventDefault());
 
+            // Save/Load Event Listeners
+            saveBtn.addEventListener('click', () => {
+                const name = prompt('Enter a name for your creation:');
+                if (name) {
+                    const creations = getCreations();
+                    const existingIndex = creations.findIndex(c => c.name === name);
+                    const data = getCanvasData();
+                    if (existingIndex > -1) {
+                        if (confirm(`'${name}' already exists. Overwrite it?`)) {
+                            creations[existingIndex].data = data;
+                        } else {
+                            return;
+                        }
+                    } else {
+                        creations.push({ name, data });
+                    }
+                    saveCreations(creations);
+                    alert(`'${name}' saved successfully!`);
+                }
+            });
+
+            creationsBtn.addEventListener('click', openCreationsModal);
+            closeModalBtn.addEventListener('click', closeCreationsModal);
+            creationsModal.addEventListener('click', (e) => {
+                if (e.target === creationsModal) closeCreationsModal();
+            });
+
+            creationsList.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (!button) return;
+                
+                const index = parseInt(button.dataset.index);
+                let creations = getCreations();
+
+                if (button.classList.contains('load-creation-btn')) {
+                    loadCanvasData(creations[index].data);
+                    closeCreationsModal();
+                } else if (button.classList.contains('delete-creation-btn')) {
+                    if (confirm(`Are you sure you want to delete '${creations[index].name}'?`)) {
+                        creations.splice(index, 1);
+                        saveCreations(creations);
+                        renderCreationsList();
+                    }
+                } else if (button.classList.contains('rename-creation-btn')) {
+                    const newName = prompt('Enter new name:', creations[index].name);
+                    if (newName && newName !== creations[index].name) {
+                        creations[index].name = newName;
+                        saveCreations(creations);
+                        renderCreationsList();
+                    }
+                }
+            });
 
             // --- Initial Setup ---
             createGrid();
