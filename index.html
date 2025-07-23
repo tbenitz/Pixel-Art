@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Creator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom styles for better look and feel */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .tool-btn.active {
+            background-color: #4f46e5;
+            color: white;
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+        }
+        #canvas {
+            touch-action: none; /* Prevents scrolling on touch devices while drawing */
+        }
+        .pixel {
+            background-color: #ffffff;
+            /* The border provides the grid lines */
+            border: 1px solid #e5e7eb;
+        }
+        .no-grid .pixel {
+            border-color: transparent;
+        }
+        /* Custom color picker style */
+        .color-picker-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #e5e7eb;
+            transition: border-color 0.2s;
+        }
+        .color-picker-wrapper:hover {
+            border-color: #4f46e5;
+        }
+        input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 70px;
+            height: 70px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transform: translate(-10px, -10px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex flex-col items-center justify-center min-h-screen p-4 transition-colors duration-300">
+
+    <div class="w-full max-w-7xl">
+        <h1 class="text-4xl font-bold text-center mb-2 text-gray-800 dark:text-white">Pixel Art Creator</h1>
+        <p class="text-center text-gray-500 dark:text-gray-400 mb-6">Create your masterpiece. One pixel at a time.</p>
+
+        <div class="flex flex-col lg:flex-row gap-6">
+
+            <!-- Toolbar -->
+            <aside class="w-full lg:w-64 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col gap-4">
+                <h2 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-700 pb-2">Tools</h2>
+                
+                <!-- Color Picker -->
+                <div class="flex flex-col items-center">
+                    <label for="colorPicker" class="mb-2 font-medium">Color</label>
+                    <div class="color-picker-wrapper shadow-inner">
+                        <input type="color" id="colorPicker" value="#000000">
+                    </div>
+                </div>
+
+                <!-- Tool Buttons -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="pencil-tool" class="tool-btn active flex flex-col items-center justify-center p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-indigo-500 hover:text-white transition-all duration-200">
+                        <i class="fas fa-pencil-alt text-2xl"></i>
+                        <span class="text-xs mt-1">Pencil</span>
+                    </button>
+                    <button id="eraser-tool" class="tool-btn flex flex-col items-center justify-center p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-indigo-500 hover:text-white transition-all duration-200">
+                        <i class="fas fa-eraser text-2xl"></i>
+                        <span class="text-xs mt-1">Eraser</span>
+                    </button>
+                    <button id="fill-tool" class="tool-btn flex flex-col items-center justify-center p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-indigo-500 hover:text-white transition-all duration-200">
+                        <i class="fas fa-fill-drip text-2xl"></i>
+                        <span class="text-xs mt-1">Fill</span>
+                    </button>
+                    <button id="eyedropper-tool" class="tool-btn flex flex-col items-center justify-center p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-indigo-500 hover:text-white transition-all duration-200">
+                        <i class="fas fa-eye-dropper text-2xl"></i>
+                        <span class="text-xs mt-1">Picker</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Canvas Area -->
+            <main class="flex-1 flex justify-center items-center">
+                <div id="canvas" class="grid aspect-square w-full max-w-[70vh] shadow-2xl rounded-lg overflow-hidden border-4 border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-800">
+                    <!-- Pixels will be generated here by JavaScript -->
+                </div>
+            </main>
+
+            <!-- Settings Panel -->
+            <aside class="w-full lg:w-64 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col gap-4">
+                <h2 class="text-xl font-semibold border-b border-gray-200 dark:border-gray-700 pb-2">Settings</h2>
+                
+                <!-- Grid Size -->
+                <div>
+                    <label for="gridSize" class="block mb-2 font-medium">Grid Size: <span id="gridSizeLabel">32x32</span></label>
+                    <input type="range" id="gridSize" min="8" max="64" value="32" step="8" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                </div>
+
+                <!-- Grid Lines Toggle -->
+                <div class="flex items-center justify-between">
+                    <label for="gridLinesToggle" class="font-medium">Grid Lines</label>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="gridLinesToggle" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+
+                <!-- Clear Canvas -->
+                <button id="clear-btn" class="w-full p-3 rounded-lg bg-red-500 text-white font-bold hover:bg-red-600 transition-colors duration-200 flex items-center justify-center gap-2">
+                    <i class="fas fa-trash"></i>
+                    Clear Canvas
+                </button>
+
+                <!-- Download Button -->
+                <button id="download-btn" class="w-full p-3 rounded-lg bg-green-500 text-white font-bold hover:bg-green-600 transition-colors duration-200 flex items-center justify-center gap-2">
+                    <i class="fas fa-download"></i>
+                    Export PNG
+                </button>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const canvas = document.getElementById('canvas');
+            const colorPicker = document.getElementById('colorPicker');
+            const toolBtns = document.querySelectorAll('.tool-btn');
+            const gridSizeSlider = document.getElementById('gridSize');
+            const gridSizeLabel = document.getElementById('gridSizeLabel');
+            const clearBtn = document.getElementById('clear-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const gridLinesToggle = document.getElementById('gridLinesToggle');
+
+            // --- State Variables ---
+            let currentColor = colorPicker.value;
+            let currentTool = 'pencil'; // 'pencil', 'eraser', 'fill', 'eyedropper'
+            let isDrawing = false;
+            let gridSize = parseInt(gridSizeSlider.value);
+            const defaultPixelColor = '#ffffff'; // White
+
+            // --- Functions ---
+
+            /**
+             * Creates the pixel grid based on the current gridSize.
+             * It clears the existing grid and generates a new one.
+             */
+            function createGrid() {
+                canvas.innerHTML = ''; // Clear previous grid
+                canvas.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+                canvas.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
+
+                for (let i = 0; i < gridSize * gridSize; i++) {
+                    const pixel = document.createElement('div');
+                    pixel.classList.add('pixel');
+                    pixel.dataset.index = i; // For flood fill
+                    canvas.appendChild(pixel);
+                }
+            }
+            
+            /**
+             * Handles the primary drawing logic when interacting with a pixel.
+             * @param {MouseEvent} e - The mouse event.
+             */
+            function handlePixelInteraction(e) {
+                if (!e.target.classList.contains('pixel')) return;
+                const pixel = e.target;
+
+                switch (currentTool) {
+                    case 'pencil':
+                        pixel.style.backgroundColor = currentColor;
+                        break;
+                    case 'eraser':
+                        pixel.style.backgroundColor = defaultPixelColor;
+                        break;
+                    case 'eyedropper':
+                        const pickedColor = pixel.style.backgroundColor;
+                        if (pickedColor) {
+                            // Convert rgb to hex for the color picker
+                            const hexColor = rgbToHex(pickedColor);
+                            colorPicker.value = hexColor;
+                            currentColor = hexColor;
+                        }
+                        // Switch back to pencil tool after picking a color
+                        setActiveTool('pencil');
+                        break;
+                    case 'fill':
+                        floodFill(pixel);
+                        break;
+                }
+            }
+
+            /**
+             * Implements the flood fill (bucket) algorithm using a queue-based approach.
+             * @param {HTMLElement} startPixel - The pixel where the fill starts.
+             */
+            function floodFill(startPixel) {
+                const allPixels = canvas.childNodes;
+                const startColor = startPixel.style.backgroundColor;
+                
+                if (startColor === currentColor) return; // Avoid infinite loops
+
+                const queue = [startPixel];
+                const visited = new Set([startPixel.dataset.index]);
+
+                while (queue.length > 0) {
+                    const currentPixel = queue.shift();
+                    currentPixel.style.backgroundColor = currentColor;
+
+                    const neighbors = getNeighbors(currentPixel, allPixels);
+                    for (const neighbor of neighbors) {
+                        if (!visited.has(neighbor.dataset.index) && neighbor.style.backgroundColor === startColor) {
+                            visited.add(neighbor.dataset.index);
+                            queue.push(neighbor);
+                        }
+                    }
+                }
+            }
+
+            /**
+             * Gets the adjacent neighbors of a pixel.
+             * @param {HTMLElement} pixel - The pixel to find neighbors for.
+             * @param {NodeListOf<Element>} allPixels - The list of all pixels in the canvas.
+             * @returns {Array<HTMLElement>} An array of neighboring pixel elements.
+             */
+            function getNeighbors(pixel, allPixels) {
+                const index = parseInt(pixel.dataset.index);
+                const neighbors = [];
+                const x = index % gridSize;
+                const y = Math.floor(index / gridSize);
+
+                // Top
+                if (y > 0) neighbors.push(allPixels[index - gridSize]);
+                // Bottom
+                if (y < gridSize - 1) neighbors.push(allPixels[index + gridSize]);
+                // Left
+                if (x > 0) neighbors.push(allPixels[index - 1]);
+                // Right
+                if (x < gridSize - 1) neighbors.push(allPixels[index + 1]);
+                
+                return neighbors;
+            }
+            
+            /**
+             * Sets the currently active tool and updates the UI.
+             * @param {string} toolName - The name of the tool to activate.
+             */
+            function setActiveTool(toolName) {
+                currentTool = toolName;
+                toolBtns.forEach(btn => {
+                    if (btn.id === `${toolName}-tool`) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            /**
+             * Converts an RGB color string to a HEX string.
+             * @param {string} rgb - The RGB color string (e.g., "rgb(255, 0, 0)").
+             * @returns {string} The HEX color string (e.g., "#ff0000").
+             */
+            function rgbToHex(rgb) {
+                if (rgb.startsWith('#')) return rgb;
+                let [r, g, b] = rgb.match(/\d+/g).map(Number);
+                return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            }
+
+
+            // --- Event Listeners ---
+
+            // Tool selection
+            toolBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const toolName = btn.id.replace('-tool', '');
+                    setActiveTool(toolName);
+                });
+            });
+
+            // Color picker change
+            colorPicker.addEventListener('input', (e) => {
+                currentColor = e.target.value;
+            });
+
+            // Grid size slider change
+            gridSizeSlider.addEventListener('input', (e) => {
+                gridSizeLabel.textContent = `${e.target.value}x${e.target.value}`;
+            });
+            gridSizeSlider.addEventListener('change', (e) => {
+                gridSize = parseInt(e.target.value);
+                createGrid();
+            });
+
+            // Clear button
+            clearBtn.addEventListener('click', createGrid);
+            
+            // Grid lines toggle
+            gridLinesToggle.addEventListener('change', () => {
+                canvas.classList.toggle('no-grid', !gridLinesToggle.checked);
+            });
+
+            // Download button
+            downloadBtn.addEventListener('click', () => {
+                // Temporarily remove borders for a clean image
+                const hadGrid = !canvas.classList.contains('no-grid');
+                if (hadGrid) {
+                    canvas.classList.add('no-grid');
+                }
+
+                html2canvas(canvas, {
+                    backgroundColor: null, // Transparent background
+                    scale: 5 // Increase resolution for better quality
+                }).then(canvasImage => {
+                    // Restore grid lines if they were on
+                    if (hadGrid) {
+                       canvas.classList.remove('no-grid');
+                    }
+                    
+                    const link = document.createElement('a');
+                    link.download = 'pixel-art.png';
+                    link.href = canvasImage.toDataURL('image/png');
+                    link.click();
+                });
+            });
+
+            // Canvas drawing events (mousedown, mousemove, mouseup)
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                handlePixelInteraction(e);
+            });
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDrawing) {
+                    handlePixelInteraction(e);
+                }
+            });
+            // Stop drawing when mouse leaves the canvas or is released
+            document.body.addEventListener('mouseup', () => {
+                isDrawing = false;
+            });
+            canvas.addEventListener('mouseleave', () => {
+                isDrawing = false;
+            });
+            // Prevent drag-and-drop behavior
+            canvas.addEventListener('dragstart', (e) => e.preventDefault());
+            canvas.addEventListener('drop', (e) => e.preventDefault());
+
+
+            // --- Initial Setup ---
+            createGrid();
+        });
+    </script>
+</body>
+</html>
